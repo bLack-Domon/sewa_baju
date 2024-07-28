@@ -1,0 +1,96 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Data Kategori</h3>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+          <li class="breadcrumb-item active">Data Kategori</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <!-- Card -->
+        <div class="card">
+          <div class="card-header">
+            {% comment %} <h3 class="card-title">Daftar Kategori</h3>
+             {% endcomment %}
+             <a href="{% url 'kategori_create' %}" class="btn btn-primary btn-sm ml-3">Tambah Kategori</a>
+            <div class="card-tools">
+              <!-- Form Pencarian -->
+              <form method="GET" class="form-inline">
+                <div class="input-group input-group-sm" style="width: 150px;">
+                  <input type="search" name="q" class="form-control float-right" placeholder="Cari">
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-default">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+             
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body table-responsive p-0">
+            <table class="table table-hover text-nowrap">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>DDC</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for kategori in kategori_list %}
+                <tr>
+                  <td>{{ kategori.nama }}</td>
+                  <td>{{ kategori.ddc }}</td>
+                  <td>
+                    <a href="{% url 'kategori_update' kategori.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'kategori_delete' kategori.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer clearfix">
+            <!-- Pagination -->
+            <ul class="pagination pagination-sm m-0 float-right">
+              {% if kategori_list.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">&laquo; Pertama</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ kategori_list.previous_page_number }}">Sebelumnya</a></li>
+              {% endif %}
+
+              <li class="page-item disabled"><span class="page-link">Halaman {{ kategori_list.number }} dari {{ kategori_list.paginator.num_pages }}</span></li>
+
+              {% if kategori_list.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ kategori_list.next_page_number }}">Selanjutnya</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ kategori_list.paginator.num_pages }}">Terakhir &raquo;</a></li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /.content -->
+{% endblock %}

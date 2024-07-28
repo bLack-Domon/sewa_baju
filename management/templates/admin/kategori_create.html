@@ -1,0 +1,62 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Tambah Kategori</h3>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'kategori' %}">Kategori</a></li>
+          <li class="breadcrumb-item active">Tambah Kategori</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <!-- Card -->
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Form Tambah Kategori</h3>
+          </div>
+          <!-- /.card-header -->
+          <!-- form start -->
+          <form method="post">
+            <div class="card-body">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="id_nama">Nama</label>
+                <input type="text" class="form-control" id="id_nama" name="nama" value="{{ form.nama.value|default_if_none:'' }}" placeholder="Masukkan nama kategori">
+                <small class="form-text text-danger">{{ form.nama.errors }}</small>
+              </div>
+              <div class="form-group">
+                <label for="id_ddc">DDC</label>
+                <input type="text" class="form-control" id="id_ddc" name="ddc" value="{{ form.ddc.value|default_if_none:'' }}" placeholder="Masukkan DDC kategori">
+                <small class="form-text text-danger">{{ form.ddc.errors }}</small>
+              </div>
+            </div>
+            <!-- /.card-body -->
+
+            <div class="card-footer">
+              <button type="submit" class="btn btn-primary">Simpan</button>
+              <a href="{% url 'kategori' %}" class="btn btn-default float-right">Kembali</a>
+            </div>
+          </form>
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /.content -->
+{% endblock %}

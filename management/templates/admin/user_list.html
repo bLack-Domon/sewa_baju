@@ -1,0 +1,75 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Data Petugas</h3>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+          <li class="breadcrumb-item active">Data Petugas</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <!-- Card -->
+        <div class="card">
+          <div class="card-header">
+            {% comment %} <a href="{% url 'user_create' %}" class="btn btn-primary btn-sm ml-2">Tambah Pengguna</a> {% endcomment %}
+            <div class="card-tools">
+              <!-- Form Pencarian -->
+             
+              
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.username }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <a href="{% url 'user_update' user.id %}" class="btn btn-warning">Edit</a>
+                    <form action="{% url 'user_delete' user.id %}" method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Hapus</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </table>
+        </div>
+        <!-- /.card-body -->
+       
+      </div>
+      <!-- /.card -->
+    </div>
+  </div>
+</div>
+</section>
+
+
+
+
+
+{% endblock %}

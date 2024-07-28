@@ -1,0 +1,11 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<h2>Konfirmasi Hapus Katalog</h2>
+<p>Anda yakin ingin menghapus katalog "{{ katalog.nama }}"?</p>
+<form method="post" style="display: inline;">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-danger">Hapus</button>
+  <a href="{% url 'katalog' %}" class="btn btn-secondary">Batal</a>
+</form>
+{% endblock %}

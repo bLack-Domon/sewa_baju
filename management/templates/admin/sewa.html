@@ -1,0 +1,268 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+{% load humanize %}
+<div class="row">
+    <div class="col-md-12">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h3>Data Sewa</h3>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+                            <li class="breadcrumb-item active">Data Sewa</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <!-- Search Form -->
+                            <div class="card-header">
+                                <form method="GET" class="form-inline mb-3">
+                                    <input type="text" name="q" class="form-control mr-sm-2" placeholder="Cari Nama pelanggan" value="{{ query }}">
+                                    <input type="date" name="start_date" class="form-control mr-sm-2" placeholder="Tanggal Awal" value="{{ start_date }}">
+                                    <input type="date" name="end_date" class="form-control mr-sm-2" placeholder="Tanggal Akhir" value="{{ end_date }}">
+                                    <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+                                </form>
+                               
+                            </div>
+
+                            <!-- Table -->
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>No.</th>
+                                                <th>Pelanggan</th>
+                                                <th>Pakai</th>
+                                                <th>Ambil</th>
+                                                <th>Kembali</th>
+                                                <th>Total</th>
+                                                <th>Jenis</th>
+                                                <th>Pembayaran</th>
+                                                <th>Pembatalan</th>
+                                                
+                                                <th>metode pengambilan</th>
+                                                <th>metode Pengembalian</th>
+                                                <th>denda</th>
+                                                <th>Pengembalian</th>
+                                                <th>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for sewa in sewa_list %}
+                                            <tr>
+                                                <td>{{ sewa.id }}</td>
+                                                <td>{{ sewa.pelanggan.nama }}</td>
+                                                <td>{{ sewa.tanggal_pakai }}</td>
+                                                <td>{{ sewa.tanggal_ambil }}</td>
+                                                <td>{{ sewa.tanggal_kembalikan }}</td>
+                                                <td>{{ sewa.total_harga|intcomma }}</td>
+                                                <td>{{ sewa.jenis_pembayaran }}</td>
+                                                <td>{{ sewa.status_bayar }}</td>
+                                                <td>{{ sewa.status_batalpesanan }}</td>
+                                                <td>{{ sewa.metode_pengambilan }}</td>
+                                                <td>{{ sewa.metode_pengembalian }}</td>
+                                                <td>
+                                                    {% if sewa.status_pengembalian == 'Selesai' %}
+                                                   0
+                                                    {% else %}
+                                                    {{ sewa.denda|intcomma }}
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if sewa.status_pengembalian == 'Belum' %}
+                                                    <button class="btn btn-success update-pengembalian-status" data-sewa-id="{{ sewa.id }}" data-status="Selesai">Belum</button>
+                                                    {% else %}
+                                                    Selesai
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group" aria-label="Aksi">
+                                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#detailModal{{ sewa.id }}">
+                                                            Detail
+                                                        </button>
+                                                        {% if sewa.status_bayar == 'Belum' %}
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" class="btn btn-success btn-sm update-status" data-sewa-id="{{ sewa.id }}" data-status="Lunas">
+                                                                Lunas
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger btn-sm update-status" data-sewa-id="{{ sewa.id }}" data-status="Ditolak">
+                                                                Ditolak
+                                                            </button>
+                                                        </div>
+                                                        {% elif sewa.status_bayar == 'Pending' %}
+                                                        <div class="btn-group" role="group">
+                                                           
+                                                            <button type="button" class="btn btn-success btn-sm update-status" data-sewa-id="{{ sewa.id }}" data-status="Lunas">
+                                                                Lunas
+                                                            </button>
+                                                            <button type="button" class="btn btn-danger btn-sm update-status" data-sewa-id="{{ sewa.id }}" data-status="Ditolak">
+                                                                Ditolak
+                                                            </button>
+                                                        </div>
+
+                                                        {% endif %}
+                                                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#paymentModal{{ sewa.id }}">
+                                                            Detail Pembayaran
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- /.table-responsive -->
+
+                            <!-- Pagination -->
+                            {% if sewa_list.has_other_pages %}
+                            <ul class="pagination">
+                                {% if sewa_list.has_previous %}
+                                <li class="page-item"><a class="page-link" href="?page=1">&laquo;</a></li>
+                                <li class="page-item"><a class="page-link" href="?page={{ sewa_list.previous_page_number }}">{{ sewa_list.previous_page_number }}</a></li>
+                                {% endif %}
+                                <li class="page-item active"><a class="page-link" href="?page={{ sewa_list.number }}">{{ sewa_list.number }}</a></li>
+                                {% if sewa_list.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ sewa_list.next_page_number }}">{{ sewa_list.next_page_number }}</a></li>
+                                <li class="page-item"><a class="page-link" href="?page={{ sewa_list.paginator.num_pages }}">&raquo;</a></li>
+                                {% endif %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+</div>
+
+<!-- Modal untuk detail sewa -->
+{% for sewa in sewa_list %}
+<div class="modal fade" id="detailModal{{ sewa.id }}" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel{{ sewa.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel{{ sewa.id }}">Detail Sewa</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Detail Sewa</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Katalog</th>
+                            <th>Harga</th>
+                            <th>Jumlah</th>
+                            <th>Jangka Hari</th>
+                            <th>Subtotal</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detail in sewa.detailsewa_set.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ detail.katalog.nama }}</td>
+                            <td>{{ detail.katalog.harga|intcomma }}</td>
+                            <td>{{ detail.jumlah }}</td>
+                            <td>{{ detail.jangkasewa }}
+                               
+                            </td>
+                            <td>{{ detail.sub_total|intcomma }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal untuk detail pembayaran -->
+{% for sewa in sewa_list %}
+<div class="modal fade" id="paymentModal{{ sewa.id }}" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel{{ sewa.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel{{ sewa.id }}">Detail Pembayaran</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5>Detail Pembayaran</h5>
+                <img src="{{ sewa.detailpembayaran_set.first.bukti_file_pembayaran.url }}" class="img-fluid" alt="Bukti Pembayaran">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $(".update-status").click(function(){
+            var sewa_id = $(this).data("sewa-id");
+            var status = $(this).data("status");
+            $.ajax({
+                url: "/update_status_bayar/" + sewa_id + "/",
+                method: "POST",
+                data: {
+                    'status': status,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error: function(xhr, errmsg, err){
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+
+        $(".update-pengembalian-status").click(function(){
+            var sewa_id = $(this).data("sewa-id");
+            var status = $(this).data("status");
+            $.ajax({
+                url: "/update_status_pengembalian/" + sewa_id + "/",
+                method: "POST",
+                data: {
+                    'status': status,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data){
+                    location.reload();
+                },
+                error: function(xhr, errmsg, err){
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

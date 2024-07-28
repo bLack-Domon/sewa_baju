@@ -1,0 +1,15 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Konfirmasi Hapus Slide</h2>
+    <p>Anda yakin ingin menghapus slide ini?</p>
+    <img src="{{ slide.gambar.url }}" alt="{{ slide.keterangan }}" style="width: 300px; height: auto;">
+    <p>{{ slide.keterangan }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Hapus</button>
+        <a href="{% url 'slide_list' %}" class="btn btn-secondary">Batal</a>
+    </form>
+</div>
+{% endblock %}

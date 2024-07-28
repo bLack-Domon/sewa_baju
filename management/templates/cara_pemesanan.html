@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Cara Pemesanan{% endblock %}
+
+{% block content %}
+<div class="container content-container">
+    <div class="header">
+        <h1>Cara Pemesanan</h1>
+        <p>Berikut adalah langkah-langkah untuk melakukan pemesanan baju:</p>
+    </div>
+    <strong>Pengambilan dan Pengembalian di ANTAR bagi daerah kota/kabupaten Probolinggo Gratis Ongkir, selain itu hubungi Admin <a href="https://api.whatsapp.com/send?phone=6282334905264&text=Lupa%20Password" target="_blank" class="btn btn-link">Hubungi!</a></strong>
+<ol>
+        <li><strong>Wajib Register & Login Terlebih Dahulu</strong></li>
+        <li>Pilih pakaian yang akan disewa dari daftar kategori.</li>
+        <li>Tekan tombol "Sewa Sekarang" jika ingin melihat detail pakaian, lalu tambahkan ke keranjang.</li>
+        <li>Tekan tombol "Tambahkan ke Keranjang" jika ingin langsung memesan.</li>
+        <li>Isi tanggal pakai, tanggal ambil, tanggal kembali, dan metode pembayaran.</li>
+        <li>Jika menggunakan transfer, tekan tombol "Bayar", lalu scan kode yang tertera di halaman Histori Sewa.</li>
+        <li>Menunggu persetujuan dari admin jika memilih metode pembayaran transfer. Jika sudah disetujui, pesanan bisa diambil.</li>
+        <li>Jika memilih metode pembayaran bayar di tempat, pesanan bisa langsung diambil ke tempat persewaan.</li>
+        <li>Jika ingin membatalkan pesanan, tekan tombol "Cancel" di bagian Histori Sewa dan isi alasan pembatalan.</li>
+    </ol>
+    
+    <div class="kode-pakaian">
+        <p><strong>Kode Pakaian Metode DDC (Bisa Dicari di Bagian Tombol Pencarian)</strong></p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Kategori</th>
+                    <th scope="col">Kode</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Baju Adat</td>
+                    <td>100</td>
+                </tr>
+                <tr>
+                    <td>Baju Ikhram Anak-Anak</td>
+                    <td>200</td>
+                </tr>
+                <tr>
+                    <td>Baju Profesi</td>
+                    <td>300</td>
+                </tr>
+                <tr>
+                    <td>Baju Tari</td>
+                    <td>400</td>
+                </tr>
+                <tr>
+                    <td>Baju Wisuda</td>
+                    <td>500</td>
+                </tr>
+                <tr>
+                    <td>Kostum Badut</td>
+                    <td>600</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

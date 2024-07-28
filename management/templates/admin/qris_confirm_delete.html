@@ -1,0 +1,13 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Konfirmasi Hapus QRIS</h2>
+    <p>Apakah Anda yakin ingin menghapus QRIS ini?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Konfirmasi</button>
+    </form>
+    <a href="{% url 'qris_list' %}" class="btn btn-secondary mt-3">Batal</a>
+</div>
+{% endblock %}

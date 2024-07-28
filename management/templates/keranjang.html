@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+
+{% block title %}Keranjang{% endblock %}
+
+{% block content %}
+{% load humanize %}
+
+<div class="container mt-4">
+    <h2>Keranjang Belanja</h2>
+    <!-- Tampilkan nama pengguna yang sudah login -->
+    <p>Selamat datang, {{ request.user.nama }}!</p>
+    
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th>Nama Barang</th>
+                    <th>Harga</th>
+                    <th>Jumlah Sewa</th>
+                    <th>Hari</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.katalog.nama }}</td>
+                    <td id="harga_{{ item.katalog.id }}">Rp {{ item.katalog.harga|intcomma }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="updateQuantity({{ item.katalog.id }}, -1)">-</button>
+                        <span id="jumlah_sewa_{{ item.katalog.id }}">{{ item.jumlah_sewa }}</span>
+                        <button class="btn btn-sm btn-success" onclick="updateQuantity({{ item.katalog.id }}, 1)">+</button>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" id="jangkasewa_{{ item.katalog.id }}" name="jangkasewa_{{ item.katalog.id }}" value="{{ item.jangkasewa }}" readonly required>
+                      
+                    </td>
+                    <td id="subtotal_{{ item.katalog.id }}">Rp {{ item.subtotal|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-right"><strong>Total Harga:</strong></td>
+                    <td><strong id="total_harga">Rp {{ total_harga|intcomma }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <form method="post" action="{% url 'simpan_sewapelanggan' %}" class="mt-4">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="nama">Nama Pelanggan:</label>
+                <!-- Isi nama pelanggan dengan nama pengguna yang sudah login -->
+                <input type="text" class="form-control" id="nama" name="nama" value="{{ request.user.nama }}" disabled required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="nomor_hp">Nomor HP:</label>
+                <!-- Isi nomor HP dengan nomor HP pengguna yang sudah login -->
+                <input type="text" class="form-control" id="nomor_hp" name="nomor_hp" value="{{ request.user.nomor_hp }}" disabled required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="alamat">Alamat:</label>
+            <textarea class="form-control" id="alamat" name="alamat" rows="3" required disabled>{{ request.user.alamat }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="jangka_sewa">Tanggal Ambil:</label>
+                <input type="date" class="form-control" id="tanggal_ambil" name="tanggal_ambil" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="tanggal_pesan">Tanggal Pakai:</label>
+                <input type="date" class="form-control" id="tanggal_pakai" name="tanggal_pakai" required>
+            </div>
+            
+            <div class="form-group col-md-6">
+                <label for="jangka_sewa">Tanggal Kembalikan:</label>
+                <input type="date" class="form-control" id="tanggal_kembalikan" name="tanggal_kembalikan" required>
+            </div>
+            <div class="form-group">
+                <label for="jangka_sewa_hari">Sewa Berapa Hari:</label>
+                <select class="form-control" id="jangka_sewa_hari" name="jangka_sewa_hari" onchange="updateJangkaSewaAll()" required>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+                    <option value="29">29</option>
+                    <option value="30">30</option>
+                </select>
+                
+            </div>
+        </div>
+        <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Metode Pengambilan barang:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="diantar" value="Diantar" required>
+                <label class="form-check-label" for="transfer">
+                    Diantar
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="metode_pengambilan" id="diambil" value="Diambil" required>
+                <label class="form-check-label" for="bayar_di_tempat">
+                    Diambil
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            <label>Metode Pengembalian barang:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="metode_pengembalian" id="diantar" value="Diantar" required>
+                <label class="form-check-label" for="transfer">
+                    Diantar
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="metode_pengembalian" id="diambil" value="Diambil" required>
+                <label class="form-check-label" for="bayar_di_tempat">
+                    Diambil
+                </label>
+            </div>
+        </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Kirim</button>
+    </form>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function updateQuantity(katalog_id, change) {
+    const csrftoken = getCookie('csrftoken');
+    const jangkasewa = document.getElementById(`jangkasewa_${katalog_id}`).value;
+
+    fetch("{% url 'update_keranjangpelanggan' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({
+            'katalog_id': katalog_id,
+            'change': change,
+            'jangkasewa': jangkasewa
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById(`jumlah_sewa_${katalog_id}`).innerText = data.jumlah_sewa;
+            document.getElementById(`subtotal_${katalog_id}`).innerText = `Rp ${data.subtotal}`;
+            document.getElementById('total_harga').innerText = `Rp ${data.total_harga}`;
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function updateJangkaSewa(katalog_id) {
+    const csrftoken = getCookie('csrftoken');
+    const jangkasewa = document.getElementById(`jangkasewa_${katalog_id}`).value;
+    const jumlah_sewa = document.getElementById(`jumlah_sewa_${katalog_id}`).innerText;
+
+    fetch("{% url 'update_keranjangpelanggan' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({
+            'katalog_id': katalog_id,
+            'change': 0,
+            'jangkasewa': jangkasewa
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById(`subtotal_${katalog_id}`).innerText = `Rp ${data.subtotal}`;
+            document.getElementById('total_harga').innerText = `Rp ${data.total_harga}`;
+        } else {
+            alert(data.message);
+        }
+    });
+}
+function updateJangkaSewaAll() {
+    const csrftoken = getCookie('csrftoken');
+    const jangkasewa = document.getElementById('jangka_sewa_hari').value;
+
+    document.getElementById('loading').classList.remove('d-none'); // Show loading indicator
+
+    fetch("{% url 'update_keranjang_all' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({
+            'jangkasewa': jangkasewa
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            for (let item_id in data.keranjang) {
+                document.getElementById(`jangkasewa_${item_id}`).value = data.keranjang[item_id].jangkasewa;
+                document.getElementById(`subtotal_${item_id}`).innerText = `Rp ${data.keranjang[item_id].subtotal.toLocaleString('id-ID')}`; // Format to Indonesian Rupiah
+            }
+            document.getElementById('total_harga').innerText = `Rp ${data.total_harga.toLocaleString('id-ID')}`; // Format to Indonesian Rupiah
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the cart.');
+    })
+    .finally(() => {
+        document.getElementById('loading').classList.add('d-none'); // Hide loading indicator
+    });
+}
+
+
+
+</script>
+{% endblock %}

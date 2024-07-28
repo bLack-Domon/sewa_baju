@@ -1,0 +1,75 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Tambah Katalog</h3>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+          <li class="breadcrumb-item active">Tambah Katalog</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12 offset-md-12">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title">Tambah Katalog</h3>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="kode">Kode:</label>
+                <input type="text" name="kode" id="kode" class="form-control" placeholder="Masukkan kode">
+              </div>
+              <div class="form-group">
+                <label for="nama">Nama:</label>
+                <input type="text" name="nama" id="nama" class="form-control" placeholder="Masukkan nama">
+              </div>
+              <div class="form-group">
+                <label for="gambar">Gambar:</label>
+                <input type="file" name="gambar" id="gambar" class="form-control-file">
+              </div>
+              <div class="form-group">
+                <label for="harga">Harga:</label>
+                <input type="number" name="harga" id="harga" class="form-control" placeholder="Masukkan harga">
+              </div>
+              <div class="form-group">
+                <label for="jumlah">Jumlah:</label>
+                <input type="number" name="jumlah" id="jumlah" class="form-control" placeholder="Masukkan jumlah">
+              </div>
+              <div class="form-group">
+                <label for="kategori">Kategori:</label>
+                <select name="kategori" id="kategori" class="form-control">
+                  <!-- Tambahkan opsi pilihan kategori -->
+                  {% for kategori in kategori_list %}
+                    <option value="{{ kategori.pk }}">{{ kategori.nama }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Simpan</button>
+            </form>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+    <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+{% endblock %}

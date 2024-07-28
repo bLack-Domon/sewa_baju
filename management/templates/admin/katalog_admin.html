@@ -1,0 +1,102 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Data Katalog</h3>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+          <li class="breadcrumb-item active">Data Katalog</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            {% comment %} <h3 class="card-title">Daftar Katalog</h3> {% endcomment %}
+            <form method="GET" class="form-inline my-2 my-lg-0" style="float: right;">
+              <input class="form-control mr-sm-2" type="search" placeholder="Cari" name="q" aria-label="Cari">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Cari</button>
+            </form>
+
+            <div class="card-title">
+              <a href="{% url 'katalog_create' %}" class="btn btn-primary">Tambah Katalog</a>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+           
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Kode</th>
+                  <th>Nama</th>
+                  <th>Gambar</th>
+                  <th>Harga</th>
+                  <th>Jumlah</th>
+                  <th>Kategori</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for katalog in katalog_list %}
+                <tr>
+                  <td>{{ katalog.kode }}</td>
+                  <td>{{ katalog.nama }}</td>
+                  <td><img src="{{ katalog.gambar.url }}" alt="{{ katalog.nama }}" style="max-width: 100px;"></td>
+                  <td>{{ katalog.harga }}</td>
+                  <td>{{ katalog.jumlah }}</td>
+                  <td>{{ katalog.kategori.nama }}</td>
+                  <td>
+                    <a href="{% url 'katalog_update' katalog.pk %}" class="btn btn-warning">Edit</a>
+                    <form action="{% url 'katalog_delete' katalog.pk %}" method="post" style="display: inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Hapus</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+              <span class="step-links">
+                {% if katalog_list.has_previous %}
+                  <a href="?page=1">&laquo; Pertama</a>
+                  <a href="?page={{ katalog_list.previous_page_number }}">Sebelumnya</a>
+                {% endif %}
+
+                <span class="current">
+                  Halaman {{ katalog_list.number }} dari {{ katalog_list.paginator.num_pages }}.
+                </span>
+
+                {% if katalog_list.has_next %}
+                  <a href="?page={{ katalog_list.next_page_number }}">Selanjutnya</a>
+                  <a href="?page={{ katalog_list.paginator.num_pages }}">Terakhir &raquo;</a>
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+    <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+{% endblock %}

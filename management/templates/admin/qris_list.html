@@ -1,0 +1,29 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Daftar QRIS</h2>
+    <a href="{% url 'qris_create' %}" class="btn btn-primary mb-3">Tambah QRIS</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Gambar</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in qris %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><img src="{{ item.image.url }}" alt="QRIS Image" style="width: 100px; height: auto;"></td>
+                <td>
+                    <a href="{% url 'qris_update' item.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'qris_delete' item.id %}" class="btn btn-danger">Hapus</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

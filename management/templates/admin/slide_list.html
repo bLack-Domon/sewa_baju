@@ -1,0 +1,31 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Daftar Slide</h2>
+    <a href="{% url 'slide_create' %}" class="btn btn-primary mb-3">Tambah Slide</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Gambar</th>
+                <th>Keterangan</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for slide in slides %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><img src="{{ slide.gambar.url }}" alt="{{ slide.keterangan }}" style="width: 100px; height: auto;"></td>
+                <td>{{ slide.keterangan }}</td>
+                <td>
+                    <a href="{% url 'slide_update' slide.pk %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'slide_delete' slide.pk %}" class="btn btn-danger">Hapus</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

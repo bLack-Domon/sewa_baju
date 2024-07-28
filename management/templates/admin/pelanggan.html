@@ -1,0 +1,98 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h3>Data Pelanggan</h3>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="{% url 'home' %}">Beranda</a></li>
+          <li class="breadcrumb-item active">Data Pelanggan</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <!-- Card -->
+        <div class="card">
+          <div class="card-header">
+            <a href="{% url 'pelanggan_create' %}" class="btn btn-primary btn-sm ml-2">Tambah Pelanggan</a>
+            <div class="card-tools">
+              <!-- Form Pencarian -->
+              <form method="GET" class="form-inline float-right">
+                <div class="input-group input-group-sm">
+                  <input class="form-control form-control-navbar" type="search" placeholder="Cari" name="q" aria-label="Cari">
+                  <div class="input-group-append">
+                    <button class="btn btn-navbar" type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+              
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Alamat</th>
+                  <th>Nomor HP</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pelanggan in pelanggan_list %}
+                <tr>
+                  <td>{{ pelanggan.nama }}</td>
+                  <td>{{ pelanggan.alamat }}</td>
+                  <td>{{ pelanggan.nomor_hp }}</td>
+                  <td>
+                    <a href="{% url 'pelanggan_update' pelanggan.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="{% url 'pelanggan_delete' pelanggan.pk %}" class="btn btn-danger btn-sm">Hapus</a>
+                   
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <!-- /.card-body -->
+          <div class="card-footer clearfix">
+            <!-- Pagination -->
+            <div class="float-right">
+              <ul class="pagination pagination-sm m-0">
+                {% if pelanggan_list.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">&laquo; Pertama</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ pelanggan_list.previous_page_number }}">Sebelumnya</a></li>
+                {% endif %}
+
+                <li class="page-item disabled"><a class="page-link">Halaman {{ pelanggan_list.number }} dari {{ pelanggan_list.paginator.num_pages }}.</a></li>
+
+                {% if pelanggan_list.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ pelanggan_list.next_page_number }}">Selanjutnya</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ pelanggan_list.paginator.num_pages }}">Terakhir &raquo;</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- /.content -->
+{% endblock %}

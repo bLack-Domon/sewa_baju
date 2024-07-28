@@ -1,0 +1,46 @@
+{% extends 'admin/baseadmin.html' %}
+
+{% block content %}
+<h2>Tambah Sewa</h2>
+<form id="form-sewa" method="post">
+  {% csrf_token %}
+  {{ sewa_form.as_p }}
+  <h3>Detail Sewa</h3>
+  {{ detail_sewa_formset.management_form }}
+  <div id="detail-sewa-formset">
+    {% for form in detail_sewa_formset %}
+      <div class="form-row">
+        {% for field in form %}
+          <div class="form-group col-md-3">
+            {{ field.label_tag }}
+            {{ field }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+  <button type="button" id="add-detail-sewa">Tambah Detail Sewa</button>
+  <button type="submit">Simpan</button>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('add-detail-sewa').addEventListener('click', function() {
+        var formset = document.getElementById('detail-sewa-formset');
+        var form_idx = formset.childElementCount;
+        var newForm = formset.children[form_idx - 1].cloneNode(true);
+    
+        newForm.querySelectorAll('input, select').forEach(function(input) {
+          var newId = input.id.replace('-' + (form_idx - 1) + '-', '-' + form_idx + '-');
+          var newName = input.name.replace('-' + (form_idx - 1) + '-', '-' + form_idx + '-');
+          input.setAttribute('id', newId);
+          input.setAttribute('name', newName);
+          input.value = '';
+        });
+    
+        formset.appendChild(newForm);
+      });
+    });
+    </script>
+    
+{% endblock %}

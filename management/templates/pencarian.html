@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Hasil Pencarian{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h5>Hasil Pencarian untuk "{{ query }}"</h5>
+    {% if kategori %}
+        <h6>Kategori: {{ kategori.nama }}</h6>
+        <div class="row">
+            {% if katalog_list %}
+                {% for katalog in katalog_list %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="{{ katalog.gambar.url }}" class="card-img-top" alt="{{ katalog.nama }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ katalog.nama }}</h5>
+                            <p class="card-text">Stock {{ katalog.jumlah }}</p>
+                            <p class="card-text">Rp {{ katalog.harga }}</p>
+                            <!-- Button untuk memunculkan modal -->
+                            {% comment %} <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#detailKatalog{{ katalog.id }}">
+                                Sewa Sekarang
+                            </button> {% endcomment %}
+                            {% if user.is_authenticated %}
+                            <!-- Button untuk memunculkan modal -->
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#detailKatalog{{ katalog.id }}">
+                                Sewa Sekarang
+                            </button>
+                            <!-- Button untuk langsung menambah ke keranjang -->
+                            <form method="post" action="{% url 'tambah_ke_keranjangpelanggan' katalog.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="jumlah" value="1">
+                                <button type="submit" class="btn btn-secondary">Tambah ke Keranjang</button>
+                            </form>
+                            {% else %}
+                            <!-- Link untuk login atau mendaftar -->
+                            <a href="{% url 'loginpelanggan' %}" class="btn btn-primary">Login untuk Sewa</a>
+                            <a href="{% url 'registerpelanggan' %}" class="btn btn-secondary">Daftar</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal -->
+                <div class="modal fade" id="detailKatalog{{ katalog.id }}" tabindex="-1" role="dialog" aria-labelledby="detailKatalog{{ katalog.id }}Label" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="detailKatalog{{ katalog.id }}Label">{{ katalog.nama }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="{{ katalog.gambar.url }}" class="img-fluid" alt="{{ katalog.nama }}">
+                                <p>Harga: Rp {{ katalog.harga }}</p>
+                                <!-- Form untuk memasukkan jumlah yang ingin disewa -->
+                                <form method="post" action="{% url 'tambah_ke_keranjangpelanggan' katalog.id %}">
+                                    {% csrf_token %}
+                                    <label for="jumlah">Jumlah:</label>
+                                    <input type="number" id="jumlah" name="jumlah" min="1" value="1">
+                                    <button type="submit" class="btn btn-primary mt-3">Tambah ke Keranjang</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Tidak ada katalog ditemukan untuk kategori ini.</p>
+            {% endif %}
+        </div>
+    {% else %}
+        {% if katalog_list %}
+            <p>Data yang Anda cari tidak ditemukan.</p>
+        {% else %}
+            <p>Kategori dengan DDC "{{ query }}" tidak ditemukan.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

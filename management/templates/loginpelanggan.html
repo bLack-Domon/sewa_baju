@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Login Pelanggan{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Login Pelanggan</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="id_username">Username:</label>
+            <input type="text" id="id_username" name="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_password">Password:</label>
+            <input type="password" id="id_password" name="password" class="form-control" required>
+        </div>
+
+        <!-- Tambahkan tautan "Lupa Password" -->
+        <div class="form-group">
+            <a href="https://api.whatsapp.com/send?phone=6282334905264&text=Lupa%20Password" target="_blank" class="btn btn-link">Lupa Password?</a>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+</div>
+{% endblock %}
