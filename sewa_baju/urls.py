@@ -63,8 +63,7 @@ urlpatterns = [
     path('qris/create/', views.qris_create, name='qris_create'),
     path('qris/<int:id>/update/', views.qris_update, name='qris_update'),
     path('qris/<int:id>/delete/', views.qris_delete, name='qris_delete'),
-     path('update_status_pengembalian/<int:sewa_id>/', views.update_status_pengembalian, name='update_status_pengembalian'),
-
+    path('update_status_pengembalian/<int:sewa_id>/', views.update_status_pengembalian, name='update_status_pengembalian'),
     path('', include('management.urls')),
 ]
 if settings.DEBUG:

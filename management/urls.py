@@ -21,10 +21,11 @@ urlpatterns = [
     path('loginpelanggan/', views.login_pelanggan, name='loginpelanggan'),
     # path('history-sewapelanggan/', views.history_sewa, name='history_sewapelanggan'),
     path('history-sewapelanggan/', views.history_sewa, name='history_sewapelanggan'),
+    path('generate_midtrans_token/', views.generate_midtrans_token, name='generate_midtrans_token'),
     path('batal-sewa/', views.batal_sewa, name='batal_sewa'),
     path('upload_bukti_pembayaran/', views.upload_bukti_pembayaran, name='upload_bukti_pembayaran'),
     path('get_detail_pembayaran/<int:sewa_id>/', views.get_detail_pembayaran, name='get_detail_pembayaran'),
-    path('logoutpelanggan/', auth_views.LogoutView.as_view(), name='logoutpelanggan'),
+    path('logoutpelanggan/', views.logout_pelanggan, name='logoutpelanggan'),
     # admin
 
     

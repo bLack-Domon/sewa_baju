@@ -1,5 +1,5 @@
 from django.shortcuts import render,get_object_or_404,redirect
-from .models import Slide, Kategori,Katalog,Pelanggan, Katalog,Sewa,DetailSewa,User,Qris
+from .models import Slide, Kategori,Katalog,Pelanggan, Katalog, User, Sewa, DetailSewa, Qris
 # from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -21,6 +21,8 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 
 from .forms import PelangganRegistrationForm
+from midtransclient import Snap
+from django.contrib.auth import logout
 # web============================================================================================================================
 
 from django.core.files.storage import FileSystemStorage
@@ -336,7 +338,6 @@ def send_telegram_message(nama, alamat, nomor_hp, tanggal_pakai, tanggal_ambil, 
 def history_sewa(request):
     kategori_list = Kategori.objects.all()
     sewa_list = Sewa.objects.filter(pelanggan=request.user).order_by('-tanggal_ambil')
-    qris = Qris.objects.first()  # Assuming you only have one QRIS record
 
     today = timezone.now().date()
     for sewa in sewa_list:
@@ -345,8 +346,9 @@ def history_sewa(request):
             sewa.denda = days_late * 1000
         else:
             sewa.denda = 0
+    return render(request, 'history_sewa.html', {'sewa_list': sewa_list, 'kategori_list': kategori_list})
 
-    return render(request, 'history_sewa.html', {'sewa_list': sewa_list, 'qris': qris, 'kategori_list': kategori_list})
+
 def batal_sewa(request):
     if request.method == 'POST':
         sewa_id = request.POST.get('sewa_id')
@@ -973,13 +975,64 @@ def qris_delete(request, id):
     return render(request, 'admin/qris_confirm_delete.html', {'qris': qris})
 
 
+def generate_midtrans_token(request):
+    if request.method == "POST":
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'User is not authenticated'}, status=401)
+        
+        try:
+            data = json.loads(request.body)
+            order_id = data.get('order_id')
+            gross_amount = data.get('gross_amount')
 
+            # Ensure gross_amount is converted to an integer
+            try:
+                gross_amount = int(gross_amount)
+            except (ValueError, TypeError):
+                return JsonResponse({'error': 'Invalid gross amount'}, status=400)
 
+            snap = Snap(
+                is_production=settings.MIDTRANS_IS_PRODUCTION,
+                server_key=settings.MIDTRANS_SERVER_KEY,
+            )
 
+            # Get user details
+            user = request.user
+            pelanggan = Pelanggan.objects.get(username=user.username)
+            customer_details = {
+                "first_name": pelanggan.nama,  # Asumsikan pelanggan.nama adalah first name
+                "last_name": "",  # Jika ada, tambahkan pelanggan.last_name
+                "email": pelanggan.email,
+                "phone": pelanggan.nomor_hp,
+                "address": pelanggan.alamat,  # Tambahkan jika diperlukan
+            }
 
+            # Build API parameter
+            param = {
+                "transaction_details": {
+                    "order_id": order_id,
+                    "gross_amount": gross_amount,
+                },
+                "credit_card": {
+                    "secure": True
+                },
+                "customer_details": customer_details
+            }
 
+            try:
+                transaction = snap.create_transaction(param)
+                transaction_token = transaction['token']
+                return JsonResponse({'token': transaction_token})
+            except snap.error_midtrans.MidtransAPIError as e:
+                return JsonResponse({'error': str(e)}, status=500)
 
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
 
-
-
-
+@login_required
+def logout_pelanggan(request):
+    logout(request)
+    return redirect('loginpelanggan')

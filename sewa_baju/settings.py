@@ -141,3 +141,7 @@ TELEGRAM_CHAT_ID = '1218073453'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MIDTRANS_SERVER_KEY = 'SB-Mid-server-QwHpS4A2ELq4MiZNo3MpPFP0'  # Use your actual server key
+MIDTRANS_CLIENT_KEY = 'SB-Mid-client-fG0aDO73-PxG-eQk'  # Use your actual client key
+MIDTRANS_MERCHANT_ID = 'G755384542'  # Use your actual merchant ID
+MIDTRANS_IS_PRODUCTION = False

@@ -1,250 +1,185 @@
-{% extends 'base.html' %}
-
-{% block title %}History Sewa{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} 
+{% block title %}History Sewa{% endblock %} 
+{% block content %} 
 {% load humanize %}
 <div class="container mt-4">
-    <h2>History Sewa</h2>
-    
-    <!-- Display messages -->
-    {% if messages %}
-    <div class="alert-messages">
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
-            {{ message }}
-        </div>
+  <h2>History Sewa</h2>
+  <!-- Display messages -->
+  {% if messages %}
+  <div class="alert-messages">
+    {% for message in messages %}
+    <div
+      class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+      role="alert"
+    >
+      {{ message }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead class="thead-light">
+        <tr>
+          <th>Tanggal Ambil</th>
+          <th>Tanggal Pakai</th>
+          <th>Tanggal Kembalikan</th>
+          <th>Total Harga</th>
+          <th>Status Bayar</th>
+          <th>Status Pengembalian</th>
+          <th>Jenis Pembayaran</th>
+          <th>Aksi</th>
+          <th>Status Pesanan</th>
+          <th>Metode Pengambilan</th>
+          <th>Status Pengembalian</th>
+          <th>Denda</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sewa in sewa_list %}
+        <tr>
+          <td>{{ sewa.tanggal_ambil }}</td>
+          <td>{{ sewa.tanggal_pakai }}</td>
+          <td>{{ sewa.tanggal_kembalikan }}</td>
+          <td>Rp {{ sewa.total_harga|intcomma }}</td>
+          <td>{{ sewa.get_status_bayar_display }}</td>
+          <td>{{ sewa.get_status_pengembalian_display }}</td>
+          <td>{{ sewa.jenis_pembayaran }}</td>
+          <td>
+            {% if sewa.status_bayar == 'Lunas' %}
+            Anda Sudah Membayar
+            {% else %}
+            <button
+                type="button"
+                class="btn btn-info btn-sm bayar-button"
+                data-id="{{ sewa.id }}"
+                data-amount="{{ sewa.total_harga }}"
+              >
+                Bayar
+              </button>
+            {% endif %}
+          </td>
+          <td>
+            {% if sewa.status_batalpesanan == 'Tidak' %}
+            <button
+              type="button"
+              class="btn btn-danger btn-sm batal-button"
+              data-id="{{ sewa.id }}"
+              data-toggle="modal"
+              data-target="#batalModal"
+            >
+              Batal
+            </button>
+            {% else %} {{sewa.status_batalpesanan}} {% endif %}
+          </td>
+          <td
+            class="{% if sewa.metode_pengambilan == 'Warning' %}warning{% endif %}"
+          >
+            {% if sewa.metode_pengambilan == 'Warning' %}
+            <i class="fas fa-exclamation-triangle custom-icon"></i> {{ sewa.metode_pengambilan }} 
+            {% else %}
+            <i class="fas fa-check default-icon"></i> {{ sewa.metode_pengambilan }}
+            {% endif %}
+          </td>
+          <td
+            class="{% if sewa.metode_pengembalian == 'Warning' %}warning{% endif %}"
+          >
+            {% if sewa.metode_pengembalian == 'Warning' %}
+            <i class="fas fa-exclamation-triangle custom-icon"></i> {{ sewa.metode_pengembalian }}
+            {% else %}
+            <i class="fas fa-check default-icon"></i> {{ sewa.metode_pengembalian }}
+            {% endif %}
+          </td>
+          <td>
+            {% if sewa.status_pengembalian == 'Selesai' %} 0 {% else %} {{ sewa.denda|intcomma }} {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="12">Belum ada data sewa.</td>
+        </tr>
         {% endfor %}
-    </div>
-    {% endif %}
-    
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead class="thead-light">
-                <tr>
-                    <th>Tanggal Ambil</th>
-                    <th>Tanggal Pakai</th>
-                    <th>Tanggal Kembalikan</th>
-                    <th>Total Harga</th>
-                    <th>Status Bayar</th>
-                    <th>Status Pengembalian</th>
-                    <th>Jenis Pembayaran</th>
-                    <th></th>
-                    <th>Status Pesanan</th>
-                    <th>Metode Pengambilan</th>
-                    <th>Status Pengembalian</th>
-                    <th>Status Pengembalian</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                {% for sewa in sewa_list %}
-                <tr>
-                    <td>{{ sewa.tanggal_ambil }}</td>
-                    <td>{{ sewa.tanggal_pakai }}</td>
-                    <td>{{ sewa.tanggal_kembalikan }}</td>
-                    <td>Rp {{ sewa.total_harga|intcomma }}</td>
-                    <td>{{ sewa.get_status_bayar_display }}</td>
-                    <td>{{ sewa.get_status_pengembalian_display }}</td>
-                    <td>{{ sewa.jenis_pembayaran }}</td>
-                    <td>
-                        
-                        {% if sewa.jenis_pembayaran == 'Transfer' %}
-                            {% if sewa.status_bayar == 'Pending' %}
-                                <button type="button" class="btn btn-info btn-sm info-button" data-id="{{ sewa.id }}" data-toggle="modal" data-target="#infoModal">Info</button>
-                            {% else %}
-                                <button type="button" class="btn btn-success btn-sm bayar-button" data-id="{{ sewa.id }}" data-toggle="modal" data-target="#bayarModal">Bayar</button>
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                    <td>
-
-                      {% if sewa.status_batalpesanan == 'Tidak' %}
-                        <button type="button" class="btn btn-danger btn-sm batal-button" data-id="{{ sewa.id }}" data-toggle="modal" data-target="#batalModal">Batal</button>
-                      {% else %}
-                        {{sewa.status_batalpesanan}}
-                      {% endif %}
-                    </td>
-                    <td class="{% if sewa.metode_pengambilan == 'Warning' %}warning{% endif %}">
-                      {% if sewa.metode_pengambilan == 'Warning' %}
-                          <i class="fas fa-exclamation-triangle custom-icon"></i> {{ sewa.metode_pengambilan }}
-                      {% else %}
-                          <i class="fas fa-check default-icon"></i> {{ sewa.metode_pengambilan }}
-                      {% endif %}
-                    </td>
-                    <td class="{% if sewa.metode_pengembalian == 'Warning' %}warning{% endif %}">
-                        {% if sewa.metode_pengembalian == 'Warning' %}
-                            <i class="fas fa-exclamation-triangle custom-icon"></i> {{ sewa.metode_pengembalian }}
-                        {% else %}
-                            <i class="fas fa-check default-icon"></i> {{ sewa.metode_pengembalian }}
-                        {% endif %}
-                    </td>
-                    <td>
-                      {% if sewa.status_pengembalian == 'Selesai' %}
-                     0
-                      {% else %}
-                      {{ sewa.denda|intcomma }}
-                      {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7">Belum ada data sewa.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Modal untuk Pembayaran -->
-<div class="modal fade" id="bayarModal" tabindex="-1" role="dialog" aria-labelledby="bayarModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="bayarModalLabel">Konfirmasi Pembayaran</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        {% if qris %}
-        <img src="{{ qris.image.url }}" class="img-fluid" alt="QRIS Image">
-        {% else %}
-        <p>No QRIS image available</p>
-        {% endif %}
-        Apakah Anda yakin ingin membayar sewa <span id="sewaId" hidden></span>?
-      </div>
-      <div class="modal-footer">
-        <form method="post" enctype="multipart/form-data" id="bayarForm" action="{% url 'upload_bukti_pembayaran' %}">
-            {% csrf_token %}
-            <input type="file" name="bukti_pembayaran" required>
-            <input type="hidden" id="sewa_id" name="sewa_id">
-            <button type="submit" class="btn btn-primary">Upload Bukti Pembayaran</button>
-        </form>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-      </div>
-    </div>
+      </tbody>
+    </table>
   </div>
 </div>
 
-<!-- Modal untuk Info -->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="infoModalLabel">Detail Pembayaran</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <img id="detailPembayaranImage" src="" class="img-fluid" alt="Detail Pembayaran Image">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Modal untuk Pembatalan Pesanan -->
-<div class="modal fade" id="batalModal" tabindex="-1" role="dialog" aria-labelledby="batalModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="batalModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="batalModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="batalModalLabel">Konfirmasi Pembatalan Pesanan</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <h5 class="modal-title" id="batalModalLabel">
+          Konfirmasi Pembatalan Pesanan
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        Apakah Anda yakin ingin membatalkan pesanan dengan ID: <span id="sewaIdBatal"></span>?
+        Apakah Anda yakin ingin membatalkan pesanan dengan ID:
+        <span id="sewaIdBatal"></span>?
       </div>
       <div class="modal-footer">
         <form method="post" id="batalForm" action="{% url 'batal_sewa' %}">
-            {% csrf_token %}
-            <input type="hidden" id="sewa_id_batal" name="sewa_id">
-            <button type="submit" class="btn btn-danger">Batalkan Pesanan</button>
+          {% csrf_token %}
+          <input type="hidden" id="sewa_id_batal" name="sewa_id" />
+          <button type="submit" class="btn btn-danger">Batalkan Pesanan</button>
         </form>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Batal
+        </button>
       </div>
     </div>
   </div>
 </div>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-      var bayarButtons = document.querySelectorAll('.bayar-button');
-      var infoButtons = document.querySelectorAll('.info-button');
-      var batalButtons = document.querySelectorAll('.batal-button');
-      var sewaIdSpan = document.getElementById('sewaId');
-      var sewaIdInput = document.getElementById('sewa_id');
-      var detailPembayaranImage = document.getElementById('detailPembayaranImage');
-      var sewaIdBatalSpan = document.getElementById('sewaIdBatal');
-      var sewaIdBatalInput = document.getElementById('sewa_id_batal');
+  document.addEventListener("DOMContentLoaded", function () {
+    var bayarButtons = document.querySelectorAll(".bayar-button");
 
-      bayarButtons.forEach(function(button) {
-          button.addEventListener('click', function() {
-              var sewaId = this.getAttribute('data-id');
-              sewaIdSpan.textContent = sewaId;
-              sewaIdInput.value = sewaId;
-          });
-      });
+    bayarButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        var orderId = this.getAttribute("data-id");
+        var grossAmount = this.getAttribute("data-amount");
 
-      infoButtons.forEach(function(button) {
-          button.addEventListener('click', function() {
-              var sewaId = this.getAttribute('data-id');
-              fetch('/get_detail_pembayaran/' + sewaId)
-                  .then(response => response.json())
-                  .then(data => {
-                      if (data.success) {
-                          detailPembayaranImage.src = data.image_url;
-                      } else {
-                          detailPembayaranImage.src = '';
-                      }
-                  });
-          });
+        fetch("/generate_midtrans_token/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+          body: JSON.stringify({
+            order_id: orderId,
+            gross_amount: grossAmount,
+          }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.token) {
+            window.open(
+              `https://app.sandbox.midtrans.com/snap/v2/vtweb/${data.token}`,
+              "_blank"
+            );
+          } else {
+            alert("Failed to get token");
+          }
+        });
       });
-
-      batalButtons.forEach(function(button) {
-          button.addEventListener('click', function() {
-              var sewaId = this.getAttribute('data-id');
-              sewaIdBatalSpan.textContent = sewaId;
-              sewaIdBatalInput.value = sewaId;
-          });
-      });
+    });
   });
 </script>
-{% comment %} <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var bayarButtons = document.querySelectorAll('.bayar-button');
-        var infoButtons = document.querySelectorAll('.info-button');
-        var sewaIdSpan = document.getElementById('sewaId');
-        var sewaIdInput = document.getElementById('sewa_id');
-        var detailPembayaranImage = document.getElementById('detailPembayaranImage');
-
-        bayarButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var sewaId = this.getAttribute('data-id');
-                sewaIdSpan.textContent = sewaId;
-                sewaIdInput.value = sewaId;
-            });
-        });
-
-        infoButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var sewaId = this.getAttribute('data-id');
-                fetch('/get_detail_pembayaran/' + sewaId)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            detailPembayaranImage.src = data.image_url;
-                        } else {
-                            detailPembayaranImage.src = '';
-                        }
-                    });
-            });
-        });
-    });
-</script> {% endcomment %}
-
 {% endblock %}
